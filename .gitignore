@@ -1,0 +1,16 @@
+test*jpg
+videos/*mp4
+
+images/**/*.{jpg,png}
+requested_images/**/*.{jpg,png}
+
+# exclude python stuff
+*.egg-info
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+
+rpi_venv
+
+.Trash-*
