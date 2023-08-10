@@ -39,7 +39,7 @@ class Daemon:
                 await socket.send(b"started" if self.timelapse_running else b"stopped")
             elif action == "capture_current_image":
                 filename = self.capture_current_image("requested_images")
-                await socket.send(f"captured {filename}".encode("utf-8"))
+                await socket.send(filename.encode("utf-8"))
             else:
                 await socket.send(b"unknown command")
 
