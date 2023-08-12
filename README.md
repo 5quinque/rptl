@@ -2,13 +2,9 @@
 
 Use a raspberry pi to take still images every 5 minutes and create timelapse videos from them.
 
-### image example
+### example
 
-![image](20230809_225113.jpg)
-
-#### [Video example](tsg_test2_8x.mp4)
-
-
+https://github.com/linnit/timelapse/assets/15974789/212abc56-2e1e-4775-912c-c72ca147de03
 
 ## usage
 
