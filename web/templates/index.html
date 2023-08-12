@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+    <header>timelapse</header>
+    <ul>
+        {% for day in image_days_list %}
+        <li><a href="/day/{{ day }}">{{ day }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <div class="small">
+        <img src="image/{{ latest_image.parent.name }}/{{ latest_image.name }}" alt="last image">
+    </div>
+</div>
+{% endblock %}

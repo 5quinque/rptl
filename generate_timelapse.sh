@@ -27,9 +27,10 @@ for dir in images/*; do
         -pattern_type glob \
         -i "images/$dir/*.jpg" \
         -s hd1080 \
-        -c:v libx265 \
+        -c:v libx264 \
         -crf 18 \
         -vf "format=yuv420p" \
+        -movflags +faststart \
         "videos/$dir.mp4"
     # ffmpeg \
     #     -framerate 24 \
@@ -47,12 +48,3 @@ for dir in images/*; do
     # rm -rf "images/$dir"
 done
 
-
-# ffmpeg \
-#     -framerate 1 \
-#     -i test_image_1.jpg \
-#     -vf "drawtext=text='%{metadata\\:datetime}':x=640:y=360:fontsize=24:fontcolor=white" \
-#     -c:v libx265 \
-#     -crf 18 \
-#     -vf "format=yuv420p" \
-#     testtext2.mp4

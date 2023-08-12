@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+    <header>timelapse</header>
+    <ul>
+        {% for video in video_list %}
+        <li><a href="/view_video/{{ video.name }}">{{ video.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
