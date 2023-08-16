@@ -36,9 +36,29 @@ ffmpeg \
     "./tsg_test2.mp4" # [TODO] use date for filename
 ```
 
+ffmpeg \
+    -framerate 30 \
+    -pattern_type glob \
+    -i "./**/**/*.jpg" \
+    -s hd1080 \
+    -c:v libx265 \
+    -crf 18 \
+    -vf "format=yuv420p" \
+    "./uniform_test.mp4"
+
+ffmpeg -i ./uniform_test.mp4 -filter:v "setpts=0.5*PTS" ./uniform_test_2x.mp4
+ffmpeg -i ./uniform_test_2x.mp4 -filter:v "setpts=0.5*PTS" ./uniform_test_4x.mp4
+ffmpeg -i ./uniform_test_4x.mp4 -filter:v "setpts=0.5*PTS" ./uniform_test_8x.mp4
+ffmpeg -i ./uniform_test_8x.mp4 -filter:v "setpts=0.5*PTS" ./uniform_test_16x.mp4
+ffmpeg -i ./uniform_test_16x.mp4 -filter:v "setpts=0.5*PTS" ./uniform_test_32x.mp4
+
 Double the speed of the `./tsg_test2.mp4` video.
 ```bash
 ffmpeg -i ./tsg_test2.mp4 -filter:v "setpts=0.5*PTS" ./tsg_test2_2x.mp4
+ffmpeg -i ./tsg_test2_2x.mp4 -filter:v "setpts=0.5*PTS" ./tsg_test2_4x.mp4
+ffmpeg -i ./tsg_test2_4x.mp4 -filter:v "setpts=0.5*PTS" ./tsg_test2_8x.mp4
+ffmpeg -i ./tsg_test2_8x.mp4 -filter:v "setpts=0.5*PTS" ./tsg_test2_16x.mp4
+
 ```
 
 Generate individual timelapse videos for each day from the images in the `images` directory.

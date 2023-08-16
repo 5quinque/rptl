@@ -4,6 +4,8 @@ videos/*mp4
 images/**/*.{jpg,png}
 requested_images/**/*.{jpg,png}
 
+group_test/**
+
 # exclude python stuff
 *.egg-info
 *.pyc

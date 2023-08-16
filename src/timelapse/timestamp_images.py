@@ -1,8 +1,14 @@
+import logging
+
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
 from pathlib import Path
+
+
+logger = logging.getLogger(__name__)
+
 
 class Files:
     def __init__(self):
@@ -54,6 +60,8 @@ class Files:
         # filename = f"{image_directory}/{dir_name}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
         # self.camera.capture_still(filename)
 
+        logger.info(f"Saving {filepath.name} to {self.timestamped_image_path}/{dir_name}/{filepath.name}")
+
         # Save the edited image
         img.save(f"{self.timestamped_image_path}/{dir_name}/{filepath.name}", "JPEG", quality=100, optimize=True, progressive=True)
 
@@ -70,4 +78,10 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        # level=opts["--log-level"],
+        level="INFO",
+        format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
+        force=True,
+    )
     main()
