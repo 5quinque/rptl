@@ -15,7 +15,7 @@ class Files:
         self.image_path = Path("/home/ryan/timelapse/images")
         self.video_path = Path("/home/ryan/timelapse/videos")
         self.timestamped_image_path = Path("/home/ryan/timelapse/timestamped_images")
-        self.profiled_image_path = Path("/home/ryan/timelapse/group_test")
+        self.profiled_image_path = Path("/home/ryan/timelapse/processed_images")
 
     def list_images(self, day):
         image_list = list(self.timestamped_image_path.glob(f"{day}/*.jpg"))
@@ -79,8 +79,22 @@ class Files:
         # copy filepath to self.profiled_image_path
         shutil.copy(filepath, f"{self.profiled_image_path}/{dir_name}/{colour_profile}/{filepath.name}")
 
+    def latest_day(self):
+        days = self.get_days()
+        return days[-1]
 
-def main():
+    def is_timestamped_images_to_process(self):
+        # check if there are any days in timestamped_images that don't exist in processed_images
+        # and that day isn't today, to do this, we assume that the latest day is today
+        timestamped_days = self.get_days()
+        processed_days = [ d.name for d in self.profiled_image_path.glob("*") ]
+
+        for day in timestamped_days:
+            if day not in processed_days and day != self.latest_day():
+                return True
+
+
+def run():
     files = Files()
     days = files.get_days()
 
@@ -90,6 +104,12 @@ def main():
 
     for day in days:
         image_list = files.list_images(day)
+
+        # if the day directory exists, assume we've processed that day and skip it
+        # if you want to (re)process a day, delete the directory
+        if Path(f"{files.profiled_image_path}/{day}").exists():
+            logger.debug(f"Skipping {day} as it's already been profiled")
+            continue
 
         for image in image_list:
             if image.name in profiled_images_names:
@@ -135,4 +155,4 @@ if __name__ == "__main__":
         format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
         force=True,
     )
-    main()
+    run()

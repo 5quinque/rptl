@@ -66,7 +66,7 @@ class Files:
         img.save(f"{self.timestamped_image_path}/{dir_name}/{filepath.name}", "JPEG", quality=100, optimize=True, progressive=True)
 
 
-def main():
+def run():
     files = Files()
     days = files.get_days()
 
@@ -84,4 +84,4 @@ if __name__ == "__main__":
         format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
         force=True,
     )
-    main()
+    run()

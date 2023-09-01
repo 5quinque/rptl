@@ -7,7 +7,7 @@ import zmq
 import zmq.asyncio
 
 from timelapse.camera import Camera
-
+from timelapse import timestamp_images, sort_colour_profile
 
 logger = logging.getLogger(__name__)
 
@@ -87,3 +87,40 @@ class Daemon:
                 self.timelapse_running = False
 
         # self.camera.stop()
+
+    async def run_timestamp_images(self):
+        process_interval = 60 * 60
+
+        while self.timelapse_running:
+            if last_still_timestamp != None and (datetime.now() - last_still_timestamp).seconds < process_interval:
+                # calculate how long to sleep for based on the process_interval
+                time_to_sleep = process_interval - (datetime.now() - last_still_timestamp).seconds
+                logger.debug(f"Sleeping for {time_to_sleep} seconds.")
+                await asyncio.sleep(time_to_sleep)
+
+            last_still_timestamp = datetime.now()
+            timestamp_images.run()
+
+    async def run_sort_colour_profile(self):
+        while self.timelapse_running:
+            if not sort_colour_profile.is_timestamped_images_to_process():
+                logger.debug(f"Sleeping for 6 hours.")
+                await asyncio.sleep(60 * 60 * 6) # 6 hours
+
+            sort_colour_profile.run()
+
+    async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
+        while self.timelapse_running:
+            proc = await asyncio.create_subprocess_shell(
+                shellscript,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+
+            stdout, stderr = await proc.communicate()
+
+            logger.debug(f"[{shellscript!r} exited with {proc.returncode}]")
+            if stdout:
+                logger.debug(f"[stdout]\n{stdout.decode()}")
+            if stderr:
+                logger.debug(f"[stderr]\n{stderr.decode()}")

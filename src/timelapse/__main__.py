@@ -11,15 +11,14 @@ async def _main():
     daemon = Daemon()
     daemon.start()
 
-    # create two tasks from daemon.run_timelapse() and daemon.zmq_server()
     tasks = [
         asyncio.create_task(daemon.run_timelapse()),
+        asyncio.create_task(daemon.run_timestamp_images()),
+        asyncio.create_task(daemon.run_sort_colour_profile()),
         asyncio.create_task(daemon.zmq_server()),
     ]
 
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
-
-    # asy
 
 def main():
     logging.basicConfig(
