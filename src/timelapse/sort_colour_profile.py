@@ -96,6 +96,17 @@ class Files:
 
 def run():
     files = Files()
+
+    # check if the .processing file exists
+    # if it does, exit
+    if Path(f"{files.profiled_image_path}/.processing").exists():
+        logger.info("Already processing, exiting.")
+        return
+
+    # add a '.processing' file this is to ensure we don't create 
+    # a video from a day that's still being processed
+    Path(f"{files.profiled_image_path}/.processing").touch()
+
     days = files.get_days()
 
     profiled_images = files.get_all_profiled_images()
@@ -118,7 +129,6 @@ def run():
 
             files.create_colour_profile(image)
 
-
     days = {}
     colour_profiles = files.get_colour_profiles()
     for profile in colour_profiles:
@@ -134,18 +144,19 @@ def run():
         # days[profile.parent.name] = size
         # logger.info(f"{profile.name}")
 
-    # print(days)
     for day in days:
         # print highest value for each day
         highest = max(days[day], key=lambda x: x[1])
         logger.info(f"{day}: {highest}")
-        # logger.info(f"{day}: {days[day]}")
 
         # remove all colour_profile directorys not in the highest value
         for profile in days[day]:
             if profile[0] != highest[0]:
                 logger.info(f"Removing {profile[0]}")
                 shutil.rmtree(f"{files.profiled_image_path}/{day}/{profile[0]}")
+
+    # remove the '.processing' file
+    Path(f"{files.profiled_image_path}/{day}/.processing").unlink()
 
 
 if __name__ == "__main__":
