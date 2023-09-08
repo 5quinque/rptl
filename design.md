@@ -29,4 +29,5 @@
 │                            ├─────────────────►│    processed_videos/YYYYMMDD.mp4    │
 │                            │ Skip current day.└─────────────────────────────────────┘
 └────────────────────────────┘ Don't run whilst "Colour Profiled Images" is running.
+                               (don't run for directories that have the .processing file)
 ```

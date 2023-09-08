@@ -7,7 +7,12 @@ for dir in processed_images/*; do
 
     # first check if the mp4 exists and skip if it does
     if [ -f "processed_videos/$dir.mp4" ]; then
-        echo "Skipping $dir.mp4"
+        echo "Skipping $dir.mp4, it already exists"
+        continue
+    fi
+
+    if [ -f "processed_images/$dir/.processing" ]; then
+        echo "Skipping $dir.mp4, it is currently being processed"
         continue
     fi
 
