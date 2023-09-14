@@ -145,8 +145,12 @@ def run():
         # logger.info(f"{profile.name}")
 
     for day in days:
-        # print highest value for each day
-        highest = max(days[day], key=lambda x: x[1])
+        # exclude profiles that have a profile.name of '000'
+        # [TODO] expand this to exclude profiles that are close to 000
+        colour_profiles = [ profile for profile in days[day] if profile[0] != "000" ]
+
+        # get the highest value
+        highest = max(colour_profiles, key=lambda x: x[1])
         logger.info(f"{day}: {highest}")
 
         # remove all colour_profile directorys not in the highest value
@@ -156,7 +160,7 @@ def run():
                 shutil.rmtree(f"{files.profiled_image_path}/{day}/{profile[0]}")
 
     # remove the '.processing' file
-    Path(f"{files.profiled_image_path}/{day}/.processing").unlink()
+    Path(f"{files.profiled_image_path}/.processing").unlink()
 
 
 if __name__ == "__main__":

@@ -91,6 +91,8 @@ class Daemon:
     async def run_timestamp_images(self):
         process_interval = 60 * 60
 
+        last_still_timestamp = None
+
         while self.timelapse_running:
             if last_still_timestamp != None and (datetime.now() - last_still_timestamp).seconds < process_interval:
                 # calculate how long to sleep for based on the process_interval
@@ -102,8 +104,10 @@ class Daemon:
             timestamp_images.run()
 
     async def run_sort_colour_profile(self):
+        cp_files = sort_colour_profile.Files()
+
         while self.timelapse_running:
-            if not sort_colour_profile.is_timestamped_images_to_process():
+            if not cp_files.is_timestamped_images_to_process():
                 logger.debug(f"Sleeping for 6 hours.")
                 await asyncio.sleep(60 * 60 * 6) # 6 hours
 

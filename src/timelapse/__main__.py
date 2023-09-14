@@ -23,7 +23,7 @@ async def _main():
 def main():
     logging.basicConfig(
         # level=opts["--log-level"],
-        level="DEBUG",
+        level="INFO",
         format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
         force=True,
     )
