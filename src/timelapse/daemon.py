@@ -101,7 +101,11 @@ class Daemon:
                 await asyncio.sleep(time_to_sleep)
 
             last_still_timestamp = datetime.now()
-            timestamp_images.run()
+
+            try:
+                timestamp_images.run()
+            except Exception as e:
+                logger.exception(e)
 
     async def run_sort_colour_profile(self):
         cp_files = sort_colour_profile.Files()
@@ -111,7 +115,13 @@ class Daemon:
                 logger.debug(f"Sleeping for 6 hours.")
                 await asyncio.sleep(60 * 60 * 6) # 6 hours
 
-            sort_colour_profile.run()
+            try:
+                sort_colour_profile.run()
+            except Exception as e:
+                logger.exception(e)
+
+    # async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
+
 
     async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
         while self.timelapse_running:

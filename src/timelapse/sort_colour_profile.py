@@ -112,8 +112,8 @@ def run():
     profiled_images = files.get_all_profiled_images()
     profiled_images_names = [ image.name for image in profiled_images ]
 
-
-    for day in days:
+    # loop through all days except the last one
+    for day in days[:-1]:
         image_list = files.list_images(day)
 
         # if the day directory exists, assume we've processed that day and skip it
