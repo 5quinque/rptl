@@ -120,7 +120,8 @@ class Daemon:
             except Exception as e:
                 logger.exception(e)
 
-    # async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
+    async def run_daily_video(self):
+        await self.run_shellscript("generate_sort_daily_videos.sh")
 
 
     async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
