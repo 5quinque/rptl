@@ -5,7 +5,6 @@ from pathlib import Path
 
 from timelapse.camera import Camera
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -24,9 +23,14 @@ def main():
     while running:
         logger.debug(f"Running: {running}")
         try:
-            if last_still_timestamp != None and (datetime.now() - last_still_timestamp).seconds < timelapse_interval:
+            if (
+                last_still_timestamp != None
+                and (datetime.now() - last_still_timestamp).seconds < timelapse_interval
+            ):
                 # calculate how long to sleep for based on the timelapse_interval
-                time_to_sleep = timelapse_interval - (datetime.now() - last_still_timestamp).seconds
+                time_to_sleep = (
+                    timelapse_interval - (datetime.now() - last_still_timestamp).seconds
+                )
                 logger.debug(f"Sleeping for {time_to_sleep} seconds.")
                 time.sleep(time_to_sleep)
                 continue
@@ -38,7 +42,9 @@ def main():
             # create the directory if it doesn't exist
             Path(f"images/{dir_name}").mkdir(parents=True, exist_ok=True)
 
-            filename = f"images/{dir_name}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
+            filename = (
+                f"images/{dir_name}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
+            )
             camera.capture_still(filename)
         except KeyboardInterrupt:
             logger.info("KeyboardInterrupt, exiting.")

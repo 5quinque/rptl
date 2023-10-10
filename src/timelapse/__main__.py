@@ -3,7 +3,6 @@ import logging
 
 from timelapse.daemon import Daemon
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,6 +19,7 @@ async def _main():
 
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
+
 def main():
     logging.basicConfig(
         # level=opts["--log-level"],
@@ -28,6 +28,7 @@ def main():
         force=True,
     )
     asyncio.run(_main())
+
 
 if __name__ == "__main__":
     main()

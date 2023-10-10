@@ -1,11 +1,9 @@
 import logging
 import math
 import shutil
-
-from PIL import Image
-
 from pathlib import Path
 
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +22,7 @@ class Files:
         return image_list
 
     def get_days(self):
-        days = [ d.name for d in self.timestamped_image_path.glob("*") ]
+        days = [d.name for d in self.timestamped_image_path.glob("*")]
         days.sort()
 
         return days
@@ -32,21 +30,21 @@ class Files:
     def colour_profile(self, img):
         # Get width and height of Image
         width, height = img.size
-    
+
         # Initialize Variable
         r_total = 0
         g_total = 0
         b_total = 0
-    
+
         count = 0
-    
+
         # Iterate through every fifth pixel in image and add rgb values to total
         # so we can get an average later
         for x in range(0, width, 5):
             for y in range(0, height, 5):
                 # r,g,b value of pixel
                 r, g, b = img.getpixel((x, y))
-    
+
                 r_total += r
                 g_total += g
                 b_total += b
@@ -72,12 +70,19 @@ class Files:
         dir_name = filepath.parent.name
 
         # create the directory if it doesn't exist
-        Path(f"{self.profiled_image_path}/{dir_name}/{colour_profile}").mkdir(parents=True, exist_ok=True)
+        Path(f"{self.profiled_image_path}/{dir_name}/{colour_profile}").mkdir(
+            parents=True, exist_ok=True
+        )
 
-        logger.info(f"Saving {filepath.name} to {self.profiled_image_path}/{dir_name}/{colour_profile}/{filepath.name}")
+        logger.info(
+            f"Saving {filepath.name} to {self.profiled_image_path}/{dir_name}/{colour_profile}/{filepath.name}"
+        )
 
         # copy filepath to self.profiled_image_path
-        shutil.copy(filepath, f"{self.profiled_image_path}/{dir_name}/{colour_profile}/{filepath.name}")
+        shutil.copy(
+            filepath,
+            f"{self.profiled_image_path}/{dir_name}/{colour_profile}/{filepath.name}",
+        )
 
     def latest_day(self):
         days = self.get_days()
@@ -87,7 +92,7 @@ class Files:
         # check if there are any days in timestamped_images that don't exist in processed_images
         # and that day isn't today, to do this, we assume that the latest day is today
         timestamped_days = self.get_days()
-        processed_days = [ d.name for d in self.profiled_image_path.glob("*") ]
+        processed_days = [d.name for d in self.profiled_image_path.glob("*")]
 
         for day in timestamped_days:
             if day not in processed_days and day != self.latest_day():
@@ -103,14 +108,14 @@ def run():
         logger.info("Already processing, exiting.")
         return
 
-    # add a '.processing' file this is to ensure we don't create 
+    # add a '.processing' file this is to ensure we don't create
     # a video from a day that's still being processed
     Path(f"{files.profiled_image_path}/.processing").touch()
 
     days = files.get_days()
 
     profiled_images = files.get_all_profiled_images()
-    profiled_images_names = [ image.name for image in profiled_images ]
+    profiled_images_names = [image.name for image in profiled_images]
 
     # loop through all days except the last one
     for day in days[:-1]:
@@ -147,7 +152,7 @@ def run():
     for day in days:
         # exclude profiles that have a profile.name of '000'
         # [TODO] expand this to exclude profiles that are close to 000
-        colour_profiles = [ profile for profile in days[day] if profile[0] != "000" ]
+        colour_profiles = [profile for profile in days[day] if profile[0] != "000"]
 
         # get the highest value
         highest = max(colour_profiles, key=lambda x: x[1])

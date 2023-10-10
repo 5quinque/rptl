@@ -1,15 +1,16 @@
-from datetime import datetime
-from pathlib import Path
 import asyncio
 import logging
+from datetime import datetime
+from pathlib import Path
 
 import zmq
 import zmq.asyncio
 
+from timelapse import sort_colour_profile, timestamp_images
 from timelapse.camera import Camera
-from timelapse import timestamp_images, sort_colour_profile
 
 logger = logging.getLogger(__name__)
+
 
 class Daemon:
     def __init__(self, zmq_bind_address="tcp://127.0.0.1:5555"):
@@ -50,7 +51,7 @@ class Daemon:
     def stop(self):
         self.timelapse_running = False
         # self.camera.stop()
-    
+
     def capture_current_image(self, image_directory="images"):
         dir_name = datetime.now().strftime("%Y%m%d")
 
@@ -73,9 +74,16 @@ class Daemon:
         while self.timelapse_running:
             logger.debug(f"Running: {self.timelapse_running}")
             try:
-                if last_still_timestamp != None and (datetime.now() - last_still_timestamp).seconds < timelapse_interval:
+                if (
+                    last_still_timestamp is not None
+                    and (datetime.now() - last_still_timestamp).seconds
+                    < timelapse_interval
+                ):
                     # calculate how long to sleep for based on the timelapse_interval
-                    time_to_sleep = timelapse_interval - (datetime.now() - last_still_timestamp).seconds
+                    time_to_sleep = (
+                        timelapse_interval
+                        - (datetime.now() - last_still_timestamp).seconds
+                    )
                     logger.debug(f"Sleeping for {time_to_sleep} seconds.")
                     await asyncio.sleep(time_to_sleep)
 
@@ -94,9 +102,14 @@ class Daemon:
         last_still_timestamp = None
 
         while self.timelapse_running:
-            if last_still_timestamp != None and (datetime.now() - last_still_timestamp).seconds < process_interval:
+            if (
+                last_still_timestamp is not None
+                and (datetime.now() - last_still_timestamp).seconds < process_interval
+            ):
                 # calculate how long to sleep for based on the process_interval
-                time_to_sleep = process_interval - (datetime.now() - last_still_timestamp).seconds
+                time_to_sleep = (
+                    process_interval - (datetime.now() - last_still_timestamp).seconds
+                )
                 logger.debug(f"Sleeping for {time_to_sleep} seconds.")
                 await asyncio.sleep(time_to_sleep)
 
@@ -113,7 +126,7 @@ class Daemon:
         while self.timelapse_running:
             if not cp_files.is_timestamped_images_to_process():
                 logger.debug(f"Sleeping for 6 hours.")
-                await asyncio.sleep(60 * 60 * 6) # 6 hours
+                await asyncio.sleep(60 * 60 * 6)  # 6 hours
 
             try:
                 sort_colour_profile.run()
@@ -122,7 +135,6 @@ class Daemon:
 
     async def run_daily_video(self):
         await self.run_shellscript("generate_sort_daily_videos.sh")
-
 
     async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
         while self.timelapse_running:
