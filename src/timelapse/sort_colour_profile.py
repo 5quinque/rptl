@@ -10,10 +10,10 @@ logger = logging.getLogger(__name__)
 
 class Files:
     def __init__(self):
-        self.image_path = Path("/home/ryan/timelapse/images")
-        self.video_path = Path("/home/ryan/timelapse/videos")
-        self.timestamped_image_path = Path("/home/ryan/timelapse/timestamped_images")
-        self.profiled_image_path = Path("/home/ryan/timelapse/processed_images")
+        self.image_path = Path("images")
+        self.video_path = Path("videos")
+        self.timestamped_image_path = Path("timestamped_images")
+        self.profiled_image_path = Path("processed_images")
 
     def list_images(self, day):
         image_list = list(self.timestamped_image_path.glob(f"{day}/*.jpg"))

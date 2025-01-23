@@ -1,3 +1,4 @@
 docopt
 picamera2
+pillow
 pyzmq

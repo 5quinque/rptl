@@ -13,9 +13,20 @@ logger = logging.getLogger(__name__)
 
 
 class Daemon:
-    def __init__(self, timelapse_interval=300, zmq_bind_address="tcp://127.0.0.1:5555"):
+    def __init__(
+        self,
+        timelapse_interval=300,
+        start_hour=None,
+        start_minute=None,
+        end_hour=None,
+        end_minute=None,
+    ):
         self.timelapse_interval = timelapse_interval
-        self.zmq_bind_address = zmq_bind_address
+        self.start_hour = start_hour
+        self.start_minute = start_minute
+        self.end_hour = end_hour
+        self.end_minute = end_minute
+        self.zmq_bind_address = "tcp://127.0.0.1:5555"
 
         self.timelapse_running = False
         self.camera = Camera()
@@ -60,14 +71,12 @@ class Daemon:
         Path(f"{image_directory}/{dir_name}").mkdir(parents=True, exist_ok=True)
 
         filename = f"{image_directory}/{dir_name}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
+        logger.debug(f"Capturing filename {filename}")
         self.camera.capture_still(filename)
 
         return filename
 
     async def run_timelapse(self):
-        # 6 hours
-        # timelapse_duration = 6 * 60 * 60
-
         # log the datetime timestamp when we last took a stil
         last_still_timestamp = None
 
@@ -88,6 +97,17 @@ class Daemon:
                     await asyncio.sleep(time_to_sleep)
 
                 last_still_timestamp = datetime.now()
+
+                now = datetime.now()
+                if self.start_hour:
+                    if now.hour <= self.start_hour and now.minute < self.start_minute:
+                        logger.debug("Outside of start time.")
+                        continue
+
+                if self.end_hour:
+                    if now.hour >= self.end_hour and now.minute > self.end_minute:
+                        logger.debug("Outside of end time.")
+                        continue
 
                 self.capture_current_image()
             except KeyboardInterrupt:
@@ -125,7 +145,7 @@ class Daemon:
 
         while self.timelapse_running:
             if not cp_files.is_timestamped_images_to_process():
-                logger.debug(f"Sleeping for 6 hours.")
+                logger.debug("Sleeping for 6 hours.")
                 await asyncio.sleep(60 * 60 * 6)  # 6 hours
 
             try:

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 class Files:
     def __init__(self):
         self.image_path = Path("/home/ryan/timelapse/images")
@@ -10,13 +11,13 @@ class Files:
         image_list.sort()
 
         return image_list
-    
+
     def get_days(self):
-        days = [ d.name for d in self.image_path.glob("*") ]
+        days = [d.name for d in self.image_path.glob("*")]
         days.sort()
 
         return days
-    
+
     def get_latest_day(self):
         days = self.get_days()
         return days[-1]
@@ -32,3 +33,4 @@ class Files:
         video_list.sort()
 
         return video_list
+

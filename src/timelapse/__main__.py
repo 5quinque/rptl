@@ -7,10 +7,15 @@ Options:
   -h --help             Show this screen.
   --version             Show version.
   --interval=<seconds>  Interval [default: 300].
+  --start-time=<HHMM>   Time to start..
+  --end-time=<HHMM>     Time to stop
+  --log-level=<LEVEL>   Log level [default: INFO]
 
 """
+
 import asyncio
 import logging
+import re
 
 from docopt import docopt
 
@@ -19,8 +24,8 @@ from timelapse.daemon import Daemon
 logger = logging.getLogger(__name__)
 
 
-async def _main():
-    daemon = Daemon()
+async def _main(interval, start_hour, start_minute, end_hour, end_minute):
+    daemon = Daemon(interval, start_hour, start_minute, end_hour, end_minute)
     daemon.start()
 
     tasks = [
@@ -34,16 +39,35 @@ async def _main():
 
 
 def main():
+    arguments = docopt(__doc__, version="RPTL V0.1")
     logging.basicConfig(
-        # level=opts["--log-level"],
-        level="INFO",
+        level=arguments["--log-level"],
         format="[%(asctime)s] <%(levelname)s> [%(name)s] %(message)s",
         force=True,
     )
-    asyncio.run(_main())
+    start_hour = None
+    start_minute = None
+    end_hour = None
+    end_minute = None
+    if arguments["--start-time"]:
+        if re.match(r"\d{4}$", arguments["--start-time"]):
+            start_hour = int(arguments["--start-time"][:2])
+            start_minute = int(arguments["--start-time"][2:])
+        else:
+            logger.info("Invalid start time")
+            print(__doc__)
+            return
+    if arguments["--end-time"]:
+        if re.match(r"\d{4}$", arguments["--end-time"]):
+            end_hour = int(arguments["--end-time"][:2])
+            end_minute = int(arguments["--end-time"][2:])
+        else:
+            logger.info("Invalid end time")
+            print(__doc__)
+            return
+    interval = int(arguments["--interval"])
+    asyncio.run(_main(interval, start_hour, start_minute, end_hour, end_minute))
 
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__, version="RPTL V0.1")
-    print(arguments)
     main()
