@@ -1,5 +1,18 @@
+"""Raspberry Pi Time Lapse.
+
+Usage:
+  rptl [options]
+
+Options:
+  -h --help             Show this screen.
+  --version             Show version.
+  --interval=<seconds>  Interval [default: 300].
+
+"""
 import asyncio
 import logging
+
+from docopt import docopt
 
 from timelapse.daemon import Daemon
 
@@ -31,4 +44,6 @@ def main():
 
 
 if __name__ == "__main__":
+    arguments = docopt(__doc__, version="RPTL V0.1")
+    print(arguments)
     main()

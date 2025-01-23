@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class Daemon:
-    def __init__(self, zmq_bind_address="tcp://127.0.0.1:5555"):
+    def __init__(self, timelapse_interval=300, zmq_bind_address="tcp://127.0.0.1:5555"):
+        self.timelapse_interval = timelapse_interval
         self.zmq_bind_address = zmq_bind_address
 
         self.timelapse_running = False
@@ -64,7 +65,6 @@ class Daemon:
         return filename
 
     async def run_timelapse(self):
-        timelapse_interval = 300
         # 6 hours
         # timelapse_duration = 6 * 60 * 60
 
@@ -77,11 +77,11 @@ class Daemon:
                 if (
                     last_still_timestamp is not None
                     and (datetime.now() - last_still_timestamp).seconds
-                    < timelapse_interval
+                    < self.timelapse_interval
                 ):
                     # calculate how long to sleep for based on the timelapse_interval
                     time_to_sleep = (
-                        timelapse_interval
+                        self.timelapse_interval
                         - (datetime.now() - last_still_timestamp).seconds
                     )
                     logger.debug(f"Sleeping for {time_to_sleep} seconds.")
