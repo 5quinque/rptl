@@ -100,12 +100,14 @@ class Daemon:
 
                 now = datetime.now()
                 if self.start_hour:
-                    if now.hour <= self.start_hour and now.minute < self.start_minute:
+                    start_time = now.replace(hour=self.start_hour, minute=self.start_minute)
+                    if now < start_time:
                         logger.debug("Outside of start time.")
                         continue
 
                 if self.end_hour:
-                    if now.hour >= self.end_hour and now.minute > self.end_minute:
+                    end_time = now.replace(hour=self.end_time, minute=self.end_minute)
+                    if now > end_time:
                         logger.debug("Outside of end time.")
                         continue
 
