@@ -102,6 +102,11 @@ class Files:
 def run():
     files = Files()
 
+    # create the directory if it doesn't exist
+    Path(files.profiled_image_path).mkdir(
+        parents=True, exist_ok=True
+    )
+
     # check if the .processing file exists
     # if it does, exit
     if Path(f"{files.profiled_image_path}/.processing").exists():
