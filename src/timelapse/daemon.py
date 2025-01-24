@@ -106,7 +106,7 @@ class Daemon:
                         continue
 
                 if self.end_hour:
-                    end_time = now.replace(hour=self.end_time, minute=self.end_minute)
+                    end_time = now.replace(hour=self.end_hour, minute=self.end_minute)
                     if now > end_time:
                         logger.debug("Outside of end time.")
                         continue
