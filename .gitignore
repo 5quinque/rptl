@@ -13,6 +13,7 @@ processed_videos/**
 *.pyo
 *.pyd
 __pycache__
+venv/
 
 rpi_venv
 

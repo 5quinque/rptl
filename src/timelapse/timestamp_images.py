@@ -63,9 +63,6 @@ class Files:
             parents=True, exist_ok=True
         )
 
-        # filename = f"{image_directory}/{dir_name}/{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
-        # self.camera.capture_still(filename)
-
         logger.info(
             f"Saving {filepath.name} to {self.timestamped_image_path}/{dir_name}/{filepath.name}"
         )

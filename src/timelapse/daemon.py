@@ -7,7 +7,6 @@ import zmq
 import zmq.asyncio
 
 from timelapse import sort_colour_profile, timestamp_images
-from timelapse.camera import Camera
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +19,7 @@ class Daemon:
         start_minute=None,
         end_hour=None,
         end_minute=None,
+        no_camera=False
     ):
         self.timelapse_interval = timelapse_interval
         self.start_hour = start_hour
@@ -29,6 +29,10 @@ class Daemon:
         self.zmq_bind_address = "tcp://127.0.0.1:5555"
 
         self.timelapse_running = False
+        if no_camera:
+            from timelapse.mock_camera import Camera
+        else:
+            from timelapse.camera import Camera
         self.camera = Camera()
 
     async def zmq_server(self):
@@ -93,7 +97,7 @@ class Daemon:
                         self.timelapse_interval
                         - (datetime.now() - last_still_timestamp).seconds
                     )
-                    logger.debug(f"Sleeping for {time_to_sleep} seconds.")
+                    logger.debug(f"[timelapse] Sleeping for {time_to_sleep} seconds.")
                     await asyncio.sleep(time_to_sleep)
 
                 last_still_timestamp = datetime.now()
@@ -132,7 +136,7 @@ class Daemon:
                 time_to_sleep = (
                     process_interval - (datetime.now() - last_still_timestamp).seconds
                 )
-                logger.debug(f"Sleeping for {time_to_sleep} seconds.")
+                logger.debug(f"[timestamp] Sleeping for {time_to_sleep} seconds.")
                 await asyncio.sleep(time_to_sleep)
 
             last_still_timestamp = datetime.now()
@@ -147,7 +151,7 @@ class Daemon:
 
         while self.timelapse_running:
             if not cp_files.is_timestamped_images_to_process():
-                logger.debug("Sleeping for 6 hours.")
+                logger.debug("[sort colour profile] Sleeping for 6 hours.")
                 await asyncio.sleep(60 * 60 * 6)  # 6 hours
 
             try:

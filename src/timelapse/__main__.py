@@ -4,12 +4,14 @@ Usage:
   rptl [options]
 
 Options:
-  -h --help             Show this screen.
-  --version             Show version.
-  --interval=<seconds>  Interval [default: 300].
-  --start-time=<HHMM>   Time to start..
-  --end-time=<HHMM>     Time to stop
-  --log-level=<LEVEL>   Log level [default: INFO]
+  -h --help               Show this screen.
+  --version               Show version.
+  --interval=<seconds>    Interval [default: 300].
+  --start-time=<HHMM>     Only take photos after this time.
+  --end-time=<HHMM>       Stop taking photos after this time.
+  --sort-colour-profile   Sort images by their colour profile and only keep the major colour
+  --no-camera             Used when developing without a RPi camera connected
+  --log-level=<LEVEL>     Log level [default: INFO]
 
 """
 
@@ -24,16 +26,34 @@ from timelapse.daemon import Daemon
 logger = logging.getLogger(__name__)
 
 
-async def _main(interval, start_hour, start_minute, end_hour, end_minute):
-    daemon = Daemon(interval, start_hour, start_minute, end_hour, end_minute)
+async def _main(
+        interval,
+        start_hour,
+        start_minute,
+        end_hour,
+        end_minute,
+        no_camera,
+        sort_colour_profile
+        ):
+    daemon = Daemon(
+        interval,
+        start_hour,
+        start_minute,
+        end_hour,
+        end_minute,
+        no_camera
+    )
     daemon.start()
 
     tasks = [
         asyncio.create_task(daemon.run_timelapse()),
         asyncio.create_task(daemon.run_timestamp_images()),
-        asyncio.create_task(daemon.run_sort_colour_profile()),
         asyncio.create_task(daemon.zmq_server()),
     ]
+    if sort_colour_profile:
+        tasks.append(
+            asyncio.create_task(daemon.run_sort_colour_profile())
+        )
 
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
@@ -66,7 +86,16 @@ def main():
             print(__doc__)
             return
     interval = int(arguments["--interval"])
-    asyncio.run(_main(interval, start_hour, start_minute, end_hour, end_minute))
+
+    asyncio.run(_main(
+        interval,
+        start_hour,
+        start_minute,
+        end_hour,
+        end_minute,
+        arguments["--no-camera"],
+        arguments["--sort-colour-profile"]
+    ))
 
 
 if __name__ == "__main__":
