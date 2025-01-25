@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This script will generate a timelapse video for each directory in the images
 # directory. It will skip any directories that already have a video in the
 # videos directory.
@@ -20,6 +22,9 @@ for dir in images/*; do
         #     x=10:y=h-text_h-10: \
         #     fontcolor=white:fontsize=20" \
 
+    if [ ! -d videos ]; then
+        mkdir videos;
+    fi
 
     echo "Creating $dir.mp4"
     ffmpeg \
@@ -41,7 +46,7 @@ for dir in images/*; do
     #     -crf 18 \
     #     -vf "format=yuv420p" \
     #     "videos/$dir.mp4"
-    
+ 
     echo "Created $dir.mp4"
 
     # remove the images

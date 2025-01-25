@@ -49,6 +49,7 @@ async def _main(
         asyncio.create_task(daemon.run_timelapse()),
         asyncio.create_task(daemon.run_timestamp_images()),
         asyncio.create_task(daemon.zmq_server()),
+        asyncio.create_task(daemon.run_daily_video()),
     ]
     if sort_colour_profile:
         tasks.append(

@@ -160,7 +160,23 @@ class Daemon:
                 logger.exception(e)
 
     async def run_daily_video(self):
-        await self.run_shellscript("generate_sort_daily_videos.sh")
+        day_ran = None
+        while self.timelapse_running:
+            now = datetime.now()
+            start_time = now.replace(hour=1, minute=0)
+            end_time = now.replace(hour=2, minute=0)
+
+            # We don't want to run again on the same day
+            # And only run between 1am-2am
+            if day_ran == now.day or now < start_time or now > end_time:
+                logger.debug("[daily video] Sleeping for 30 minutes.")
+                await asyncio.sleep(30 * 60)  # 30 minutes
+                continue
+
+            # if sort_colour_profile:
+            #   script_name = "generate_sort_daily_videos.sh"
+            day_ran = now.day
+            await self.run_shellscript("generate_timelapse.sh")
 
     async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
         while self.timelapse_running:
