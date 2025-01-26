@@ -1,4 +1,5 @@
 import asyncio
+import importlib.resources
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -176,20 +177,24 @@ class Daemon:
             # if sort_colour_profile:
             #   script_name = "generate_sort_daily_videos.sh"
             day_ran = now.day
-            await self.run_shellscript("generate_timelapse.sh")
 
-    async def run_shellscript(self, shellscript, interval=60 * 60 * 6):
-        while self.timelapse_running:
-            proc = await asyncio.create_subprocess_shell(
-                shellscript,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
+            script_path = str(
+                    importlib.resources.files("timelapse").joinpath("generate_timelapse.sh")
             )
+            logger.debug(f"[daily video] running script {script_path}")
+            await self.run_shellscript(script_path)
 
-            stdout, stderr = await proc.communicate()
+    async def run_shellscript(self, shellscript):
+        proc = await asyncio.create_subprocess_shell(
+            shellscript,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
 
-            logger.debug(f"[{shellscript!r} exited with {proc.returncode}]")
-            if stdout:
-                logger.debug(f"[stdout]\n{stdout.decode()}")
-            if stderr:
-                logger.debug(f"[stderr]\n{stderr.decode()}")
+        stdout, stderr = await proc.communicate()
+
+        logger.debug(f"[{shellscript!r} exited with {proc.returncode}]")
+        if stdout:
+            logger.debug(f"[stdout]\n{stdout.decode()}")
+        if stderr:
+            logger.debug(f"[stderr]\n{stderr.decode()}")

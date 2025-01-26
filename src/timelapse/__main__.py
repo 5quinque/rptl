@@ -47,7 +47,7 @@ async def _main(
 
     tasks = [
         asyncio.create_task(daemon.run_timelapse()),
-        asyncio.create_task(daemon.run_timestamp_images()),
+        # asyncio.create_task(daemon.run_timestamp_images()),
         asyncio.create_task(daemon.zmq_server()),
         asyncio.create_task(daemon.run_daily_video()),
     ]

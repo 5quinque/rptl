@@ -44,6 +44,9 @@ class Files:
         datetime_exif = img._getexif()[36867]
 
         font = ImageFont.truetype("DejaVuSansMono.ttf", 32)
+        # [TODO] is textsize deprecated?
+        # text_height = 32
+        # text_width = draw.textlength(datetime_exif,font)
         text_width, text_height = draw.textsize(datetime_exif, font)
         x = 5  # left align
         y = img.height - text_height - 5  # bottom align
